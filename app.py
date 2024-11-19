@@ -1,8 +1,8 @@
 import streamlit as st
-from openai import OpenAI
+import openai 
 
 # OpenAI 클라이언트 설정
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # 타이틀
 st.title("상담사 챗봇")
