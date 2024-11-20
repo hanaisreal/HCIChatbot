@@ -35,7 +35,7 @@ if st.sidebar.button("Submit"):
     st.session_state.system_prompt = system_prompt
 
     # GPT로부터 인사말 생성
-    response = client.chat.completions.create(
+    response = openai.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[{"role": "system", "content": system_prompt}],
     )
@@ -61,7 +61,7 @@ if st.session_state.chat_enabled:
 
         # GPT로부터 응답 생성
         with st.chat_message("assistant"):
-            response = client.chat.completions.create(
+            response = openai.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[
                     {"role": m["role"], "content": m["content"]}
