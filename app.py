@@ -1,8 +1,8 @@
 import streamlit as st
-import openai 
+from openai import OpenAI
 
 # OpenAI 클라이언트 설정
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+OpenAI.api_key = st.secrets["OPENAI_API_KEY"]
 
 # 타이틀
 st.title("상담사 챗봇")
@@ -35,7 +35,7 @@ if st.sidebar.button("Submit"):
     st.session_state.system_prompt = system_prompt
 
     # GPT로부터 인사말 생성
-    response = openai.chat.completions.create(
+    response = OpenAI.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[{"role": "system", "content": system_prompt}],
     )
@@ -61,7 +61,7 @@ if st.session_state.chat_enabled:
 
         # GPT로부터 응답 생성
         with st.chat_message("assistant"):
-            response = openai.chat.completions.create(
+            response = OpenAI.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[
                     {"role": m["role"], "content": m["content"]}
