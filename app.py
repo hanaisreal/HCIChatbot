@@ -1,8 +1,8 @@
 import streamlit as st
-from openai import OpenAI
+import openai
 
-# OpenAI 클라이언트 설정
-OpenAI.api_key = st.secrets["OPENAI_API_KEY"]
+# OpenAI API 설정
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # 타이틀
 st.title("상담사 챗봇")
@@ -13,9 +13,9 @@ if "openai_model" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 if "chat_enabled" not in st.session_state:
-    st.session_state.chat_enabled = False
+    st.session_state["chat_enabled"] = False
 if "system_prompt" not in st.session_state:
-    st.session_state.system_prompt = ""
+    st.session_state["system_prompt"] = ""
 
 # 사이드바: 유저 정보 입력
 st.sidebar.title("사용자 정보 입력")
@@ -32,21 +32,21 @@ if st.sidebar.button("Submit"):
     system_prompt = f"""당신은 친절한 조언자입니다. 아래는 사용자 정보입니다:
 {user_info}
 사용자에게 인사말을 전해주세요."""
-    st.session_state.system_prompt = system_prompt
+    st.session_state["system_prompt"] = system_prompt
 
     # GPT로부터 인사말 생성
-    response = OpenAI.chat.completions.create(
+    response = openai.chat.completions.create(
         model=st.session_state["openai_model"],
         messages=[{"role": "system", "content": system_prompt}],
     )
     greeting = response.choices[0].message.content.strip()
 
     # 인사말만 메시지로 추가
-    st.session_state.messages.append({"role": "assistant", "content": greeting})
-    st.session_state.chat_enabled = True
+    st.session_state["messages"].append({"role": "assistant", "content": greeting})
+    st.session_state["chat_enabled"] = True
 
 # 채팅 인터페이스
-if st.session_state.chat_enabled:
+if st.session_state["chat_enabled"]:
     # 이전 대화 출력
     for message in st.session_state["messages"]:
         with st.chat_message(message["role"]):
@@ -55,24 +55,24 @@ if st.session_state.chat_enabled:
     # 사용자 입력
     if prompt := st.chat_input("질문이나 고민을 물어보세요:"):
         # 유저 메시지 추가
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        st.session_state["messages"].append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
         # GPT로부터 응답 생성
         with st.chat_message("assistant"):
-            response = OpenAI.chat.completions.create(
+            response = openai.chat.completions.create(
                 model=st.session_state["openai_model"],
                 messages=[
                     {"role": m["role"], "content": m["content"]}
-                    for m in st.session_state.messages
+                    for m in st.session_state["messages"]
                 ],
             )
             reply = response.choices[0].message.content.strip()
             st.markdown(reply)
 
         # GPT 응답 메시지 추가
-        st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.session_state["messages"].append({"role": "assistant", "content": reply})
 else:
     st.markdown(
         """
